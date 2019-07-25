@@ -5,44 +5,36 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import com.squareup.inject.assisted.Assisted
+import com.squareup.inject.assisted.AssistedInject
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
-
-
-
 class Fragment1: Fragment() {
-
-    @Inject
-    lateinit var helper: Helper
 
     companion object {
         fun newInstance(): Fragment = Fragment1()
     }
 
-    private val presenter by viewModel { injector.fragment1Presenter }
+    private val presenter by viewModel { injector.fragment1PresenterFactory.create("input") }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = inflater.inflate(R.layout.fragment_1, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        AndroidSupportInjection.inject(this)
-
-        helper.isWorking()
         presenter.isWorking()
     }
 }
 
-inline fun <reified T : ViewModel> Fragment.viewModel(crossinline provider: () -> T): Lazy<T> = viewModels<T> {
-    object : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T = provider() as T
-    }
-}
 
-class Fragment1Presenter @Inject constructor(helper: Helper): ViewModel() {
+class Fragment1Presenter @AssistedInject constructor(helper: Helper, @Assisted private val name: String): ViewModel() {
+
+    @AssistedInject.Factory
+    interface Factory {
+        fun create(name: String): Fragment1Presenter
+    }
+
     fun isWorking(): Boolean = true
 }
 

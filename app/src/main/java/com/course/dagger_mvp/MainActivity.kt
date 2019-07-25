@@ -1,7 +1,7 @@
 package com.course.dagger_mvp
 
 import android.os.Bundle
-import dagger.Subcomponent
+import androidx.lifecycle.ViewModel
 import dagger.android.ContributesAndroidInjector
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
@@ -10,23 +10,15 @@ import javax.inject.Inject
 @dagger.Module
 abstract class AppComponentContributors {
 
-    @ContributesAndroidInjector(modules = [MainActivityModule::class])
+    @ContributesAndroidInjector(modules = [ActivityContributorsModule::class])
     abstract fun mainActivity(): MainActivity
 }
 
 @dagger.Module
-abstract class MainActivityModule {
-
-    @ContributesAndroidInjector
-    abstract fun fragment1(): Fragment1
+abstract class ActivityContributorsModule {
 
     @ContributesAndroidInjector
     abstract fun fragment2(): Fragment2
-}
-
-@Subcomponent(modules = [MainActivityModule::class])
-interface ActivityComponent {
-    val fragment1Presenter: Fragment1Presenter
 }
 
 class MainActivity : DaggerAppCompatActivity() {
@@ -35,15 +27,13 @@ class MainActivity : DaggerAppCompatActivity() {
     lateinit var dao: Dao
     @Inject
     lateinit var helper: Helper
-    @Inject
-    lateinit var presenter: MainActivityPresenter
+
+    private val presenter by viewModel { injector.mainActivityPresenter }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-//        injector.activityComponent.create()
-//        AndroidInjection.inject(this)
-//
+
         dao.isWorking()
         helper.isWorking()
         presenter.isWorking()
@@ -63,6 +53,8 @@ class MainActivity : DaggerAppCompatActivity() {
         }
     }
 }
-class MainActivityPresenter @Inject constructor(){
+
+
+class MainActivityPresenter @Inject constructor() : ViewModel() {
     fun isWorking() = true
 }
