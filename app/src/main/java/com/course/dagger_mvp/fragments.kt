@@ -12,7 +12,6 @@ import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
 
-val Fragment.injector get() = (activity!!.application as ComponentProvider).component
 
 
 class Fragment1: Fragment() {
@@ -24,7 +23,7 @@ class Fragment1: Fragment() {
         fun newInstance(): Fragment = Fragment1()
     }
 
-    private val presenter by viewModel { injector.presenter }
+    private val presenter by viewModel { injector.fragment1Presenter }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? = inflater.inflate(R.layout.fragment_1, container, false)
 
@@ -37,7 +36,7 @@ class Fragment1: Fragment() {
     }
 }
 
-inline fun <reified T : ViewModel> Fragment.viewModel(crossinline provider: () -> T) = viewModels<T> {
+inline fun <reified T : ViewModel> Fragment.viewModel(crossinline provider: () -> T): Lazy<T> = viewModels<T> {
     object : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T = provider() as T
     }

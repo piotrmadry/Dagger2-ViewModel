@@ -1,7 +1,7 @@
 package com.course.dagger_mvp
 
 import android.os.Bundle
-import dagger.android.AndroidInjection
+import dagger.Subcomponent
 import dagger.android.ContributesAndroidInjector
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
@@ -24,6 +24,11 @@ abstract class MainActivityModule {
     abstract fun fragment2(): Fragment2
 }
 
+@Subcomponent(modules = [MainActivityModule::class])
+interface ActivityComponent {
+    val fragment1Presenter: Fragment1Presenter
+}
+
 class MainActivity : DaggerAppCompatActivity() {
 
     @Inject
@@ -36,8 +41,9 @@ class MainActivity : DaggerAppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        AndroidInjection.inject(this)
-
+//        injector.activityComponent.create()
+//        AndroidInjection.inject(this)
+//
         dao.isWorking()
         helper.isWorking()
         presenter.isWorking()
@@ -57,7 +63,6 @@ class MainActivity : DaggerAppCompatActivity() {
         }
     }
 }
-
-class MainActivityPresenter @Inject constructor() {
+class MainActivityPresenter @Inject constructor(){
     fun isWorking() = true
 }

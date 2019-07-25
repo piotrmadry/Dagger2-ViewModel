@@ -1,5 +1,7 @@
 package com.course.dagger_mvp
 
+import android.app.Activity
+import androidx.fragment.app.Fragment
 import dagger.Component
 import dagger.Reusable
 import dagger.android.AndroidInjector
@@ -24,7 +26,7 @@ interface AppComponent : AndroidInjector<MainApplication> {
     @Component.Factory
     abstract class Factory : AndroidInjector.Factory<MainApplication>
 
-    val presenter: Fragment1Presenter
+    val activityComponent: ActivityComponent
 }
 
 interface AppComponentProvider {
@@ -40,3 +42,6 @@ class MainApplication : DaggerApplication(), AppComponentProvider {
         super.onCreate()
     }
 }
+
+val Fragment.injector get() = (activity!!.application as AppComponentProvider).component.activityComponent
+val Activity.injector get() = (application as AppComponentProvider).component
